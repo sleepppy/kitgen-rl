@@ -18,8 +18,8 @@ class kite{
 
 
 
-  bool update_state(const double step, const vect& wind, const double C_l=1.5, const double C_d=0.29, const double psi=0.05){
-    std::pair<bool, vect> f=compute_force(wind, C_l, C_d, psi);
+  bool update_state(const double step,const double C_l=1.5, const double C_d=0.29, const double psi=0.05){
+    std::pair<bool, vect> f=compute_force(compute_wind(), C_l, C_d, psi);
     if(!f.first){
       std::cout<<"Aborting simulation\n";
       return false;
@@ -38,8 +38,15 @@ class kite{
     return true;
   }
 
-  double compute_power(const vect& wind, const double C_l, const double C_d, const double psi){
-    vect f=compute_force(wind, C_l, C_d, psi).second;
+  vect compute_wind(){
+    //湍流风以后再加 Wt
+    high = position.r*sin(position.theta);
+    if(high <=100) return vect{0.04*high+8,0,0};
+    else return vect{0.0171*(high-100)+12,0,0};
+  }
+
+  double compute_power(const double psi){
+    vect f=compute_force(compute_wind(), C_l, C_d, psi).second;
     vect t=tension(f);
     return velocity.r*t.r;
   }
@@ -56,9 +63,9 @@ class kite{
     vect f_grav;
     vect f_app;
     std::pair<bool, vect> aer;
-    f_grav.theta=(m+rhol*pi*position.r*pow(dl, 2)/4)*g*sin(position.theta); //dl设置的0，所以只有m
+    f_grav.theta=m*g*sin(position.theta);
     f_grav.phi=0;
-    f_grav.r=-(m+rhol*pi*position.r*pow(dl, 2)/4)*g*cos(position.theta);//dl设置的0，所以只有m
+    f_grav.r=-m*g*cos(position.theta);
     f_app.theta=m*(pow(velocity.phi, 2)*position.r*sin(position.theta)*cos(position.theta)-2*velocity.r*velocity.theta);
     f_app.phi=m*(-2*velocity.r*velocity.phi*sin(position.theta)-2*velocity.phi*velocity.theta*position.r*cos(position.theta));
     f_app.r=m*(position.r*pow(velocity.theta, 2)+position.r*pow(velocity.phi, 2)*pow(sin(position.theta), 2));
