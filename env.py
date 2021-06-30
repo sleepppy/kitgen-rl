@@ -1,31 +1,42 @@
 import numpy as np
 import pykite as pk
+import sys
 
 
 class AwesEnv(object):
-    action_bound = [-2.5, 1.5]  # TODO:rref速度范围
+    action_bound = [-4, 4]  # TODO:rref速度范围
 
     state_dim = 6  # 位置向量3 速度向量3
-    action_dim = 1  # rref速度是动作 rref→roll angle
+    action_dim = 1  # rref速度是动作 rref→roll angle 目前是
 
     def __init__(self):
         self.kite = pk.kite()
 
-    def step(self, step, action):
+    def step(self, action):
         done = False
         action = np.clip(action, *self.action_bound)
-        self.kite.simulate(self, step, action)  # 湍流风和x轴风速
-        # 奖励怎么算？两阶段能量评估不一样 算整个回合还是分阶段讨论
+        done = not self.kite.simulate(self, action)
+        s = [self.kite.position.theta, self.kite.position.phi, self.kite.position.r,
+             self.kite.velocity.theta, self.kite.velocity.phi, self.kite.velocity.r]
+        
+
+
+        r = self.kite.reward()
 
         # 回到原点时done
-        if ():
+        if self.kite.position.theta == 0 and self.kite.position.phi == 0 and self.kite.position.r == 0:
             done = True
-        r = self.kite.reward()
+        else :
+            if done == True:
+                r = -sys.maxsize -1
+
         return s, r, done
 
     def reset(self):
-        self.kite.__init__(pk.vect(0, 0, 0), pk.vect(0, 0, 0))
-        return self.kite
+        self.kite.__init__(pk.vect(0.0, 0.0, 0.0), pk.vect(0.0, 0.0, 0.0))
+        s = [self.kite.position.theta, self.kite.position.phi, self.kite.position.r,
+             self.kite.velocity.theta, self.kite.velocity.phi, self.kite.velocity.r]
+        return s
 
     def sample_action(self):
         return np.random.rand(2) - 0.5  # two radians
