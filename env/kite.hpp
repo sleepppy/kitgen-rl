@@ -86,8 +86,9 @@ class kite{
   }
 
   vect tension(const vect& forces) const{
-    double k=(2*m+M)/M;
-    return vect(0,0,forces.r/k);
+      auto num=M*a*forces.r+2*m*10*velocity.r/a;
+      auto denom=2*m+M*a;
+      return vect{0,0,num/denom};
   }
 
   std::pair<bool, vect> aerodynamic_force(const vect& wind_vect, const double psi) const{
@@ -103,7 +104,7 @@ class kite{
     auto asin_arg=W_e.dot(e_r)*tan(psi)/e_w.norm();
     double eta=asin(asin_arg);
     e_w=e_w/e_w.norm();
-    bool sign=W_e.x()*(abs(position.phi)<pi/2)>=0;
+    bool sign=W_e.x()*(abs(position.phi)<pi/2)>=0; //没明白
     vect x_w=-W_e/W_e.norm();
     vect y_w=e_w*(-cos(psi)*sin(eta))+(e_r.cross(e_w))*(cos(psi)*cos(eta))+e_r*sin(psi);
     vect z_w=x_w.cross(y_w);

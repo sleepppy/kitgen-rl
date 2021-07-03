@@ -1,11 +1,12 @@
 #include "kite.hpp"
 #include <iostream>
 
-int main(int argc, char* argv[]){
-  vect initial_position(0.0, 0.0, 0.0);
+int main(){
+  vect initial_position(pi/6, 0.0, 50.0);
   vect initial_velocity(0.0, 0.0, 0.0);
   kite k(initial_position, initial_velocity);
-  k.update_state(1.0, 0.034);
+//  k.update_state(1.0, -0.05);
+//  double power = k.compute_power(1.0, -0.05);
   return 0;
 
 }

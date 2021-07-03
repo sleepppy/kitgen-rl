@@ -19,7 +19,7 @@ class vect(Structure):
 class kite(Structure):
     _fields_ = [
         ('position', vect),
-        ('velocity', vect),
+        ('velocity', vect)
     ]
 
     def __init__(self, initial_pos, initial_vel):

@@ -4,13 +4,13 @@ import sys
 
 
 class AwesEnv(object):
-    action_bound = [-4, 4]  # TODO:rref速度范围
+    action_bound = [-4, 4]  # psi范围
 
     state_dim = 6  # 位置向量3 速度向量3
     action_dim = 1  # rref速度是动作 rref→roll angle 目前是
 
     def __init__(self):
-        self.kite = pk.kite()
+        self.kite = pk.kite(pk.vect(np.pi / 6, 0.0, 50.0), pk.vect(0.0, 0.0, 0.0))
 
     def step(self, action):
         done = False
@@ -18,28 +18,25 @@ class AwesEnv(object):
         done = not self.kite.simulate(self, action)
         s = [self.kite.position.theta, self.kite.position.phi, self.kite.position.r,
              self.kite.velocity.theta, self.kite.velocity.phi, self.kite.velocity.r]
-        
-
 
         r = self.kite.reward()
 
         # 回到原点时done
         if self.kite.position.theta == 0 and self.kite.position.phi == 0 and self.kite.position.r == 0:
             done = True
-        else :
+        else:
             if done == True:
-                r = -sys.maxsize -1
+                r = -sys.maxsize - 1
 
         return s, r, done
 
     def reset(self):
-        self.kite.__init__(pk.vect(0.0, 0.0, 0.0), pk.vect(0.0, 0.0, 0.0))
         s = [self.kite.position.theta, self.kite.position.phi, self.kite.position.r,
              self.kite.velocity.theta, self.kite.velocity.phi, self.kite.velocity.r]
         return s
 
     def sample_action(self):
-        return np.random.rand(2) - 0.5  # two radians
+        return -0.05  # two radians
 
 
 if __name__ == '__main__':
