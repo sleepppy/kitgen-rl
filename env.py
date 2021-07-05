@@ -15,11 +15,11 @@ class AwesEnv(object):
     def step(self, action):
         done = False
         action = np.clip(action, *self.action_bound)
-        done = not self.kite.simulate(self, action)
+        done = not self.kite.simulate(action)
         s = [self.kite.position.theta, self.kite.position.phi, self.kite.position.r,
              self.kite.velocity.theta, self.kite.velocity.phi, self.kite.velocity.r]
 
-        r = self.kite.reward()
+        r = self.kite.reward(action)
 
         # 回到原点时done
         if self.kite.position.theta == 0 and self.kite.position.phi == 0 and self.kite.position.r == 0:
@@ -36,8 +36,7 @@ class AwesEnv(object):
         return s
 
     def sample_action(self):
-        return -0.05  # two radians
-
+        return np.rad2deg(-0.05)  # two radians
 
 if __name__ == '__main__':
     env = AwesEnv()

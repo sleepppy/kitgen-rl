@@ -2,18 +2,18 @@ from env import AwesEnv
 from rl import DDPG
 import numpy as np
 import matplotlib.pyplot as plt
-import os;
+import os
 
 MAX_EPISODES = 500
 MAX_EP_STEPS = 200
 ON_TRAIN = True
 
-path="./plots/test/"
-window_size=30
-rewards=[]
-theta0=[]
-phi0=[]
-r0=[]
+path = "./plots/test/"
+window_size = 30
+rewards = []
+theta0 = []
+phi0 = []
+r0 = []
 
 # set env
 env = AwesEnv()
@@ -67,41 +67,40 @@ def eval():
             if done:
                 break
 
+
 if ON_TRAIN:
     train()
 else:
     eval()
 
-
-try:
-    os.mkdir(path)
-except OSError:
-    pass
-
-def plot_trajectory(theta, phi, r, save=None, marker='-'):
-    fig=plt.figure()
-    ax = fig.add_subplot(111, projection = '3d')
-    x=np.multiply(r, np.multiply(np.sin(theta), np.cos(phi)))
-    y=np.multiply(r, np.multiply(np.sin(theta), np.sin(phi)))
-    z=np.multiply(r, np.cos(theta))
-    line,=ax.plot(x, y, z, marker)
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    ax.set_zlabel("z")
-    if save is not None:
-        plt.savefig(save)
-    plt.show()
-
-theta0=np.array(theta0)
-phi0=np.array(phi0)
-r0=np.array(r0)
-
-plot_trajectory(theta0, phi0, r0, save=path+"traj.png")
-
-
-plt.figure()
-plt.plot(rewards, 'o')
-plt.plot(np.convolve(rewards, np.ones(window_size), 'valid') / window_size)
-plt.savefig(path+"rewards.png")
-plt.show()
-
+# try:
+#     os.mkdir(path)
+# except OSError:
+#     pass
+#
+# def plot_trajectory(theta, phi, r, save=None, marker='-'):
+#     fig=plt.figure()
+#     ax = fig.add_subplot(111, projection = '3d')
+#     x=np.multiply(r, np.multiply(np.sin(theta), np.cos(phi)))
+#     y=np.multiply(r, np.multiply(np.sin(theta), np.sin(phi)))
+#     z=np.multiply(r, np.cos(theta))
+#     line,=ax.plot(x, y, z, marker)
+#     ax.set_xlabel("x")
+#     ax.set_ylabel("y")
+#     ax.set_zlabel("z")
+#     if save is not None:
+#         plt.savefig(save)
+#     plt.show()
+#
+# theta0=np.array(theta0)
+# phi0=np.array(phi0)
+# r0=np.array(r0)
+#
+# plot_trajectory(theta0, phi0, r0, save=path+"traj.png")
+#
+#
+# plt.figure()
+# plt.plot(rewards, 'o')
+# plt.plot(np.convolve(rewards, np.ones(window_size), 'valid') / window_size)
+# plt.savefig(path+"rewards.png")
+# plt.show()
