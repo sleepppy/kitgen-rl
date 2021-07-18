@@ -1,19 +1,16 @@
 from env import AwesEnv
-from rl import DDPG
+from rl2 import DDPG
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-MAX_EPISODES = 500
-MAX_EP_STEPS = 200
+MAX_EPISODES = 100
+MAX_EP_STEPS = 2000
 ON_TRAIN = True
 
 path = "./plots/test/"
 window_size = 30
 rewards = []
-theta0 = []
-phi0 = []
-r0 = []
 
 # set env
 env = AwesEnv()
@@ -30,9 +27,14 @@ def train():
     for i in range(MAX_EPISODES):
         s = env.reset()
         ep_r = 0.
+
+        theta0 = []
+        phi0 = []
+        r0 = []
+
         for j in range(MAX_EP_STEPS):
 
-            a = rl.choose_action(s)
+            a = rl.choose_action(np.array(s))
 
             s_, r, done = env.step(a)
 
@@ -47,11 +49,23 @@ def train():
 
             theta0.append(s[0])
             phi0.append(s[1])
-            r0.append(s[3])
+            r0.append(s[2])
 
             if done or j == MAX_EP_STEPS - 1:
                 print('Ep: %i | %s | ep_r: %.1f | steps: %i' % (i, '---' if not done else 'done', ep_r, j))
                 rewards.append(ep_r)
+
+                theta0 = np.array(theta0)
+                phi0 = np.array(phi0)
+                r0 = np.array(r0)
+
+                x = np.multiply(r0, np.multiply(np.sin(theta0), np.cos(phi0)))
+                y = np.multiply(r0, np.multiply(np.sin(theta0), np.sin(phi0)))
+                z = np.multiply(r0, np.cos(theta0))
+                line, = ax.plot(x, y, z, '-')
+                ax.set_xlabel("x")
+                ax.set_ylabel("y")
+                ax.set_zlabel("z")
                 break
     rl.save()
 
@@ -69,38 +83,16 @@ def eval():
 
 
 if ON_TRAIN:
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
     train()
 else:
     eval()
 
-# try:
-#     os.mkdir(path)
-# except OSError:
-#     pass
-#
-# def plot_trajectory(theta, phi, r, save=None, marker='-'):
-#     fig=plt.figure()
-#     ax = fig.add_subplot(111, projection = '3d')
-#     x=np.multiply(r, np.multiply(np.sin(theta), np.cos(phi)))
-#     y=np.multiply(r, np.multiply(np.sin(theta), np.sin(phi)))
-#     z=np.multiply(r, np.cos(theta))
-#     line,=ax.plot(x, y, z, marker)
-#     ax.set_xlabel("x")
-#     ax.set_ylabel("y")
-#     ax.set_zlabel("z")
-#     if save is not None:
-#         plt.savefig(save)
-#     plt.show()
-#
-# theta0=np.array(theta0)
-# phi0=np.array(phi0)
-# r0=np.array(r0)
-#
-# plot_trajectory(theta0, phi0, r0, save=path+"traj.png")
-#
-#
-# plt.figure()
-# plt.plot(rewards, 'o')
-# plt.plot(np.convolve(rewards, np.ones(window_size), 'valid') / window_size)
-# plt.savefig(path+"rewards.png")
-# plt.show()
+plt.savefig(path+"traj.png")
+plt.show()
+
+plt.figure()
+plt.plot(rewards, '-')
+plt.savefig(path+"rewards.png")
+plt.show()

@@ -1,7 +1,7 @@
 from ctypes import *
 import numpy as np
 
-step = 1.0
+step = 0.02
 
 class vect(Structure):
     _fields_ = [
