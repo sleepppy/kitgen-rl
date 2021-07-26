@@ -40,7 +40,7 @@ class kite{
     position.r+=(velocity.r*step);
 
     if(position.r>max_r) position.r=max_r;
-    if(position.theta>=max_theta) return false;
+    if(abs(position.theta)>=max_theta) return false;
     return true;
   }
 

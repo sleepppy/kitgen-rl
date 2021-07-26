@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-MAX_EPISODES = 100
+MAX_EPISODES = 10
 MAX_EP_STEPS = 2000
 ON_TRAIN = True
 

@@ -31,32 +31,24 @@ class AwesEnv(object):
 
         r = self.kite.reward(action)
 
-        z = np.multiply(self.kite.position.r, np.cos(self.kite.position.theta))
-        start_z = np.multiply(self.start_r, np.cos(self.start_theta))
-
-        # self.kite.position.r > self.start_r and
-
-        if s[2] < 30:
-            r = r * (z - start_z)
-
-        if s[2] == 30:
-            arr = [self.kite.position.theta - self.start_theta, self.kite.position.phi - self.start_phi,
-                   self.kite.position.r - self.start_r]
-            r = (normalization(s[0], arr) + normalization(s[1], arr) + normalization(s[2], arr)) * r
-
         # 回到原点时done
-        if self.kite.position.theta == self.start_theta and self.kite.position.phi == self.start_phi and self.kite.position.r == self.start_r:
-            done = True
+        if s[2] == 290:
+            arr = [s[0], s[1]]
+            r = -((1 - normalization(arr[0], arr)) + normalization(arr[1], arr)) * r
+
+            if s[5] == 0:
+                done = True
+                print("arrive")
         else:
             if done == True:
-                r = -r * 1000
+                r = -10000
 
         return s, r, done
 
     def reset(self):
-        self.start_theta = np.pi / 6 * random.random()
-        self.start_phi = 0.0
-        self.start_r = 10.0 * random.random()
+        self.start_theta = np.deg2rad(40)
+        self.start_phi = np.deg2rad(5) * random.random()
+        self.start_r = 105.0 * random.random()
         self.kite = pk.kite(pk.vect(self.start_theta, self.start_phi, self.start_r), pk.vect(0.0, 0.0, 0.0))
 
         s = [self.kite.position.theta, self.kite.position.phi, self.kite.position.r,
